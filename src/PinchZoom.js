@@ -21,10 +21,11 @@ class PinchZoom extends Component {
     static defaultProps = {
         items: [],
         options: {},
+        isOpen: false,
     };
 
     state = {
-        isOpen: false,
+        isOpen: this.props.isOpen,
     };
 
     componentDidMount = () => {

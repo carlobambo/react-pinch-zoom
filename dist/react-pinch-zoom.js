@@ -52,15 +52,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	module.exports = __webpack_require__(1).default;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -182,14 +182,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	PinchZoom.defaultProps = {
 	    items: [],
-	    options: {}
+	    options: {},
+	    isOpen: false
 	};
 
 	var _initialiseProps = function _initialiseProps() {
 	    var _this3 = this;
 
 	    this.state = {
-	        isOpen: false
+	        isOpen: this.props.isOpen
 	    };
 
 	    this.componentDidMount = function () {
@@ -219,8 +220,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    this.openPhotoSwipe = function (props) {
-	        var items = props.items;
-	        var options = props.options;
+	        var items = props.items,
+	            options = props.options;
 
 	        var _this = _this3;
 
@@ -280,15 +281,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = PinchZoom;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
@@ -395,6 +396,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        return --k * k * k + 1;
 	                    }
 	                }
+	                /*
+	                	elastic: {
+	                		out: function ( k ) {
+	                 			var s, a = 0.1, p = 0.4;
+	                			if ( k === 0 ) return 0;
+	                			if ( k === 1 ) return 1;
+	                			if ( !a || a < 1 ) { a = 1; s = p / 4; }
+	                			else s = p * Math.asin( 1 / a ) / ( 2 * Math.PI );
+	                			return ( a * Math.pow( 2, - 10 * k) * Math.sin( ( k - s ) * ( 2 * Math.PI ) / p ) + 1 );
+	                 		},
+	                	},
+	                	back: {
+	                		out: function ( k ) {
+	                			var s = 1.70158;
+	                			return --k * k * ( ( s + 1 ) * k + s ) + 1;
+	                		}
+	                	}
+	                */
 	            },
 
 	            /**
@@ -501,21 +520,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                if (!features.raf) {
-	                    (function () {
-	                        var lastTime = 0;
-	                        features.raf = function (fn) {
-	                            var currTime = new Date().getTime();
-	                            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-	                            var id = window.setTimeout(function () {
-	                                fn(currTime + timeToCall);
-	                            }, timeToCall);
-	                            lastTime = currTime + timeToCall;
-	                            return id;
-	                        };
-	                        features.caf = function (id) {
-	                            clearTimeout(id);
-	                        };
-	                    })();
+	                    var lastTime = 0;
+	                    features.raf = function (fn) {
+	                        var currTime = new Date().getTime();
+	                        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+	                        var id = window.setTimeout(function () {
+	                            fn(currTime + timeToCall);
+	                        }, timeToCall);
+	                        lastTime = currTime + timeToCall;
+	                        return id;
+	                    };
+	                    features.caf = function (id) {
+	                        clearTimeout(id);
+	                    };
 	                }
 
 	                // Detect SVG support
@@ -611,7 +628,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            modal: true,
 
 	            // not fully implemented yet
-	            scaleMode: 'fit' };
+	            scaleMode: 'fit' // TODO
+	        };
 	        helper.extend(_options, options);
 
 	        /**
@@ -2229,7 +2247,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        var MSPOINTER_TYPES = {
 	                            4: 'mouse', // event.MSPOINTER_TYPE_MOUSE
 	                            2: 'touch', // event.MSPOINTER_TYPE_TOUCH
-	                            3: 'pen' };
+	                            3: 'pen' // event.MSPOINTER_TYPE_PEN
+	                        };
 	                        releasePoint.type = MSPOINTER_TYPES[e.pointerType];
 
 	                        if (!releasePoint.type) {
@@ -2335,20 +2354,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (opacityRatio < _options.verticalDragRange) {
 	                    self.close();
 	                } else {
-	                    (function () {
-	                        var initalPanY = _panOffset.y;
-	                        var initialBgOpacity = _bgOpacity;
+	                    var initalPanY = _panOffset.y;
+	                    var initialBgOpacity = _bgOpacity;
 
-	                        _animateProp('verticalDrag', 0, 1, 300, helper.easing.cubic.out, function (now) {
+	                    _animateProp('verticalDrag', 0, 1, 300, helper.easing.cubic.out, function (now) {
 
-	                            _panOffset.y = (self.currItem.initialPosition.y - initalPanY) * now + initalPanY;
+	                        _panOffset.y = (self.currItem.initialPosition.y - initalPanY) * now + initalPanY;
 
-	                            _applyBgOpacity((1 - initialBgOpacity) * now + initialBgOpacity);
-	                            _applyCurrentZoomPan();
-	                        });
+	                        _applyBgOpacity((1 - initialBgOpacity) * now + initialBgOpacity);
+	                        _applyCurrentZoomPan();
+	                    });
 
-	                        _shout('onVerticalDrag', 1);
-	                    })();
+	                    _shout('onVerticalDrag', 1);
 	                }
 
 	                return;
@@ -2844,45 +2861,43 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                        _showOrHideTimeout = setTimeout(onComplete, duration + 20);
 	                    } else {
-	                        (function () {
-	                            // "out" animation uses rAF only when PhotoSwipe is closed by browser scroll, to recalculate position
-	                            var destZoomLevel = thumbBounds.w / item.w;
+	                        // "out" animation uses rAF only when PhotoSwipe is closed by browser scroll, to recalculate position
+	                        var destZoomLevel = thumbBounds.w / item.w;
 
-	                            var initialPanOffset = {
-	                                x: _panOffset.x,
-	                                y: _panOffset.y
-	                            };
+	                        var initialPanOffset = {
+	                            x: _panOffset.x,
+	                            y: _panOffset.y
+	                        };
 
-	                            var initialZoomLevel = _currZoomLevel;
-	                            var initalBgOpacity = _bgOpacity;
+	                        var initialZoomLevel = _currZoomLevel;
+	                        var initalBgOpacity = _bgOpacity;
 
-	                            var onUpdate = function onUpdate(now) {
+	                        var onUpdate = function onUpdate(now) {
 
-	                                if (now === 1) {
-	                                    _currZoomLevel = destZoomLevel;
-	                                    _panOffset.x = thumbBounds.x;
-	                                    _panOffset.y = thumbBounds.y - _currentWindowScrollY;
-	                                } else {
-	                                    _currZoomLevel = (destZoomLevel - initialZoomLevel) * now + initialZoomLevel;
-	                                    _panOffset.x = (thumbBounds.x - initialPanOffset.x) * now + initialPanOffset.x;
-	                                    _panOffset.y = (thumbBounds.y - _currentWindowScrollY - initialPanOffset.y) * now + initialPanOffset.y;
-	                                }
-
-	                                _applyCurrentZoomPan();
-	                                if (fadeEverything) {
-	                                    template.style.opacity = 1 - now;
-	                                } else {
-	                                    _applyBgOpacity(initalBgOpacity - now * initalBgOpacity);
-	                                }
-	                            };
-
-	                            if (closeWithRaf) {
-	                                _animateProp('initialZoom', 0, 1, duration, helper.easing.cubic.out, onUpdate, onComplete);
+	                            if (now === 1) {
+	                                _currZoomLevel = destZoomLevel;
+	                                _panOffset.x = thumbBounds.x;
+	                                _panOffset.y = thumbBounds.y - _currentWindowScrollY;
 	                            } else {
-	                                onUpdate(1);
-	                                _showOrHideTimeout = setTimeout(onComplete, duration + 20);
+	                                _currZoomLevel = (destZoomLevel - initialZoomLevel) * now + initialZoomLevel;
+	                                _panOffset.x = (thumbBounds.x - initialPanOffset.x) * now + initialPanOffset.x;
+	                                _panOffset.y = (thumbBounds.y - _currentWindowScrollY - initialPanOffset.y) * now + initialPanOffset.y;
 	                            }
-	                        })();
+
+	                            _applyCurrentZoomPan();
+	                            if (fadeEverything) {
+	                                template.style.opacity = 1 - now;
+	                            } else {
+	                                _applyBgOpacity(initalBgOpacity - now * initalBgOpacity);
+	                            }
+	                        };
+
+	                        if (closeWithRaf) {
+	                            _animateProp('initialZoom', 0, 1, duration, helper.easing.cubic.out, onUpdate, onComplete);
+	                        } else {
+	                            onUpdate(1);
+	                            _showOrHideTimeout = setTimeout(onComplete, duration + 20);
+	                        }
 	                    }
 	                }, out ? 25 : 90); // Main purpose of this delay is to give browser time to paint and
 	                // create composite layers of PhotoSwipe UI parts (background, controls, caption, arrows).
@@ -3454,9 +3469,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	});
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
@@ -4119,9 +4134,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	});
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	  Copyright (c) 2016 Jed Watson.
@@ -4173,9 +4188,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}());
 
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -4184,9 +4199,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.default = ['beforeChange', 'afterChange', 'imageLoadComplete', 'resize', 'initialZoomIn', 'initialZoomInEnd', 'initialZoomOut', 'initialZoomOutEnd', 'close', 'unbindEvents', 'destroy', 'updateScrollOffset', 'preventDragEvent'];
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -4246,13 +4261,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
